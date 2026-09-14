@@ -53,7 +53,11 @@ public class PassengerController {
             }
             items.add(passengerData(passenger));
         }
-        return ApiResponse.ok("Passengers fetched", Map.of("search", search, "count", items.size(), "items", items));
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("search", search);
+        payload.put("count", items.size());
+        payload.put("items", items);
+        return ApiResponse.ok("Passengers fetched", payload);
     }
 
     @PostMapping("/passengers")

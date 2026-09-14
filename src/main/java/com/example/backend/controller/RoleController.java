@@ -114,7 +114,7 @@ public class RoleController {
         data.put("id", role.getId());
         data.put("name", role.getName());
         data.put("description", role.getDescription());
-        data.put("permissions", role.getPermissions());
+        data.put("permissions", role.getPermissions() == null ? List.of() : new ArrayList<>(role.getPermissions()));
         data.put("createdAt", role.getCreatedAt());
         data.put("updatedAt", role.getUpdatedAt());
         return data;

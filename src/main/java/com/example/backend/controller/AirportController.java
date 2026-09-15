@@ -60,6 +60,21 @@ public class AirportController {
         if (request.code() == null || request.code().isBlank()) {
             return ApiResponse.badRequest("Airport code is required");
         }
+        if (request.city() == null || request.city().isBlank()) {
+            return ApiResponse.badRequest("City is required");
+        }
+        if (request.country() == null || request.country().isBlank()) {
+            return ApiResponse.badRequest("Country is required");
+        }
+        if (request.latitude() == null) {
+            return ApiResponse.badRequest("Latitude is required");
+        }
+        if (request.longitude() == null) {
+            return ApiResponse.badRequest("Longitude is required");
+        }
+        if (request.timezone() == null || request.timezone().isBlank()) {
+            return ApiResponse.badRequest("Timezone is required");
+        }
         String code = request.code().trim().toUpperCase(Locale.ROOT);
         if (entityManager.find(Airport.class, code) != null) {
             return ApiResponse.badRequest("Airport code already exists");

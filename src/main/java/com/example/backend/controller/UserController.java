@@ -125,6 +125,7 @@ public class UserController {
                 .email(request.email())
                 .passwordHash(PasswordHasher.sha256(request.password()))
                 .role(role)
+                .userType(User.UserType.SYSTEM_USER)
                 .status(EntityLookupSupport.parseEnum(User.UserStatus.class, request.status(), User.UserStatus.Active))
                 .build();
         entityManager.persist(user);

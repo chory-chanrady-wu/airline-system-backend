@@ -31,39 +31,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public Map<String, Object> register(@RequestBody AuthRegisterRequest request) {
-        if (request.name() == null || request.name().isBlank()) {
-            return ApiResponse.badRequest("Name is required");
-        }
-        if (request.email() == null || request.email().isBlank()) {
-            return ApiResponse.badRequest("Email is required");
-        }
-        if (request.password() == null || request.password().isBlank()) {
-            return ApiResponse.badRequest("Password is required");
-        }
-        if (emailExists(request.email())) {
-            return ApiResponse.badRequest("Email already exists");
-        }
-
-        Role role = defaultPassengerRole();
-        if (role == null) {
-            return ApiResponse.badRequest("No role is available for registration");
-        }
-
-        User user = User.builder()
-                .name(request.name())
-                .email(request.email())
-                .passwordHash(PasswordHasher.sha256(request.password()))
-                .role(role)
-                .status(User.UserStatus.Active)
-                .build();
-        entityManager.persist(user);
-        entityManager.flush();
-
-        return ApiResponse.created("User registered successfully", Map.of(
-                "user", userData(user),
-                "authenticated", true,
-                "token", generateToken(user)
-        ));
+        return ApiResponse.badRequest("Registration is not available for passengers. Only system administrators can create accounts.");
     }
 
     @PostMapping("/login")
@@ -78,6 +46,11 @@ public class AuthController {
         User user = findUserByEmail(request.email());
         if (user == null || !PasswordHasher.matches(request.password(), user.getPasswordHash())) {
             return ApiResponse.badRequest("Invalid email or password");
+        }
+
+        // Prevent passengers from logging in - only SYSTEM_USER can login
+        if (user.getUserType() == User.UserType.PASSENGER) {
+            return ApiResponse.badRequest("Passengers cannot login. Please contact an administrator.");
         }
 
         return ApiResponse.ok("Login successful", Map.of(
@@ -153,6 +126,7 @@ public class AuthController {
         data.put("email", user.getEmail());
         data.put("roleId", user.getRole() == null ? null : user.getRole().getId());
         data.put("roleName", user.getRole() == null ? null : user.getRole().getName());
+        data.put("userType", user.getUserType());
         data.put("status", user.getStatus());
         data.put("createdAt", user.getCreatedAt());
         data.put("updatedAt", user.getUpdatedAt());
@@ -163,3 +137,4 @@ public class AuthController {
         return PasswordHasher.sha256(user.getEmail() + ":" + user.getId() + ":" + Instant.now().toEpochMilli());
     }
 }
+

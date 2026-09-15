@@ -36,6 +36,10 @@ public class User {
     @Column(nullable = false)
     private UserStatus status;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserType userType;
+
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
@@ -56,5 +60,10 @@ public class User {
     public enum UserStatus {
         Active,
         Inactive
+    }
+
+    public enum UserType {
+        SYSTEM_USER,    // Admin, Staff, or system operators who can login
+        PASSENGER       // Passenger profiles - cannot login directly
     }
 }

@@ -149,7 +149,21 @@ public class FlightServiceImpl implements FlightService {
 
     @Override
     public Map<String, Object> deleteFlight(String flightId) {
-        return ApiResponse.badRequest("Flight delete not available yet");
+        Flight flight = resolveFlight(flightId);
+        if (flight == null) {
+            return ApiResponse.badRequest("Flight not found");
+        }
+
+        deleteFlightDependencies(flight);
+        Integer id = flight.getId();
+        String flightNumber = flight.getFlightNumber();
+        entityManager.remove(flight);
+        entityManager.flush();
+
+        return ApiResponse.ok("Flight deleted", Map.of(
+                "id", id,
+                "flightNumber", flightNumber
+        ));
     }
 
     @Override
@@ -281,5 +295,30 @@ public class FlightServiceImpl implements FlightService {
         data.put("updatedAt", flight.getUpdatedAt());
         return data;
     }
-}
 
+    private void deleteFlightDependencies(Flight flight) {
+        List<WaitlistEntry> waitlistEntries = entityManager.createQuery("select w from WaitlistEntry w where w.flight = :flight", WaitlistEntry.class)
+                .setParameter("flight", flight)
+                .getResultList();
+        for (WaitlistEntry entry : waitlistEntries) {
+            entityManager.remove(entry);
+        }
+
+        List<Booking> bookings = entityManager.createQuery("select b from Booking b where b.flight = :flight", Booking.class)
+                .setParameter("flight", flight)
+                .getResultList();
+        for (Booking booking : bookings) {
+            entityManager.createQuery("delete from BookingHistory h where h.booking = :booking")
+                    .setParameter("booking", booking)
+                    .executeUpdate();
+            entityManager.remove(booking);
+        }
+
+        List<FlightStatus> statuses = entityManager.createQuery("select s from FlightStatus s where s.flight = :flight", FlightStatus.class)
+                .setParameter("flight", flight)
+                .getResultList();
+        for (FlightStatus status : statuses) {
+            entityManager.remove(status);
+        }
+    }
+}

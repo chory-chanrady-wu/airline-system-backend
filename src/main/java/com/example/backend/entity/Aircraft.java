@@ -25,9 +25,6 @@ public class Aircraft {
     @Column(nullable = false)
     private String model;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "airline_id", nullable = false)
-    private Airline airline;
 
     @Column(nullable = false)
     private Integer seatCapacity;

@@ -44,7 +44,7 @@ public class SeedDataLoader {
                 Airport kul = seedAirport("KUL", "Kuala Lumpur", "Malaysia", "Asia/Kuala_Lumpur");
                 Airline garuda = seedAirline("GA", "Garuda Indonesia", true,
                         "https://example.com/logos/garuda-indonesia.png");
-                Aircraft aircraft = seedAircraft("PK-GAA", "Boeing 737-800", garuda, 180, true);
+                Aircraft aircraft = seedAircraft("PK-GAA", "Boeing 737-800", 180, true);
                 Route cgkToSin = seedRoute(cgk, sin, 900, 95, true);
                 Route sinToKul = seedRoute(sin, kul, 315, 55, true);
                 LocalDateTime tomorrowMorning = LocalDateTime.now().plusDays(1).withHour(8).withMinute(30).withSecond(0).withNano(0);
@@ -98,6 +98,7 @@ public class SeedDataLoader {
                 .passwordHash(PasswordHasher.sha256(rawPassword))
                 .role(role)
                 .status(status)
+                .userType(User.UserType.SYSTEM_USER)
                 .build();
         entityManager.persist(user);
         return user;
@@ -124,11 +125,10 @@ public class SeedDataLoader {
         entityManager.persist(airline);
         return airline;
     }
-    private Aircraft seedAircraft(String registrationNumber, String model, Airline airline, int seatCapacity, boolean active) {
+    private Aircraft seedAircraft(String registrationNumber, String model, int seatCapacity, boolean active) {
         Aircraft aircraft = Aircraft.builder()
                 .registrationNumber(registrationNumber)
                 .model(model)
-                .airline(airline)
                 .seatCapacity(seatCapacity)
                 .active(active)
                 .build();

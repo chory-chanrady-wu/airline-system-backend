@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS users (
     password_hash VARCHAR(255) NOT NULL,
     role_id INTEGER NOT NULL,
     status VARCHAR(20) NOT NULL CHECK (status IN ('Active', 'Inactive')),
+    user_type VARCHAR(255) DEFAULT 'SYSTEM_USER' NOT NULL CHECK (user_type IN ('SYSTEM_USER', 'PASSENGER')),
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP NOT NULL
 );
@@ -67,7 +68,6 @@ CREATE TABLE IF NOT EXISTS aircraft (
     id INTEGER PRIMARY KEY,
     registration_number VARCHAR(255) NOT NULL UNIQUE,
     model VARCHAR(255) NOT NULL,
-    airline_id INTEGER NOT NULL,
     seat_capacity INTEGER NOT NULL,
     active BOOLEAN NOT NULL,
     created_at TIMESTAMP NOT NULL,

@@ -35,7 +35,8 @@ public class PassengerServiceImpl implements PassengerService {
         List<Map<String, Object>> items = new ArrayList<>();
         for (PassengerProfile passenger : passengers) {
             if (!needle.isBlank()) {
-                String haystack = (EntityLookupSupport.safe(passenger.getPassportNumber()) + " "
+                String haystack = (EntityLookupSupport.safe(passenger.getFullName()) + " "
+                        + EntityLookupSupport.safe(passenger.getPassportNumber()) + " "
                         + EntityLookupSupport.safe(passenger.getNationality()) + " "
                         + EntityLookupSupport.safe(passenger.getPhone()) + " "
                         + (passenger.getUser() == null ? "" : EntityLookupSupport.safe(passenger.getUser().getName()))
@@ -55,15 +56,31 @@ public class PassengerServiceImpl implements PassengerService {
 
     @Override
     public Map<String, Object> createPassenger(PassengerCreateRequest request) {
-        User user = resolveUser(request.userId());
-        if (user == null) {
-            return ApiResponse.badRequest("User not found");
+        // User is now optional - passengers can exist without a user account
+        User user = null;
+        if (request.userId() != null && !request.userId().isBlank()) {
+            user = resolveUser(request.userId());
+            if (user == null) {
+                return ApiResponse.badRequest("User not found");
+            }
+
+            PassengerProfile existingPassenger = findPassengerByUser(user);
+            if (existingPassenger != null) {
+                return ApiResponse.ok("Passenger profile already exists for this user", Map.of(
+                        "passenger", passengerData(existingPassenger),
+                        "alreadyExists", true
+                ));
+            }
         }
         if (request.passportNumber() == null || request.passportNumber().isBlank()) {
             return ApiResponse.badRequest("Passport number is required");
         }
+        if (request.fullName() == null || request.fullName().isBlank()) {
+            return ApiResponse.badRequest("Full name is required");
+        }
         PassengerProfile passenger = PassengerProfile.builder()
                 .user(user)
+                .fullName(request.fullName().trim())
                 .passportNumber(request.passportNumber())
                 .nationality(request.nationality())
                 .phone(request.phone())
@@ -89,6 +106,9 @@ public class PassengerServiceImpl implements PassengerService {
         PassengerProfile passenger = findPassenger(id);
         if (passenger == null) {
             return ApiResponse.badRequest("Passenger not found");
+        }
+        if (request.fullName() != null && !request.fullName().isBlank()) {
+            passenger.setFullName(request.fullName().trim());
         }
         if (request.passportNumber() != null && !request.passportNumber().isBlank()) {
             passenger.setPassportNumber(request.passportNumber());
@@ -176,10 +196,24 @@ public class PassengerServiceImpl implements PassengerService {
         return users.isEmpty() ? null : users.get(0);
     }
 
+    private PassengerProfile findPassengerByUser(User user) {
+        if (user == null) {
+            return null;
+        }
+        List<PassengerProfile> passengers = entityManager.createQuery(
+                        "select p from PassengerProfile p where p.user = :user",
+                        PassengerProfile.class)
+                .setParameter("user", user)
+                .setMaxResults(1)
+                .getResultList();
+        return passengers.isEmpty() ? null : passengers.get(0);
+    }
+
     private Map<String, Object> passengerData(PassengerProfile passenger) {
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("id", passenger.getId());
         data.put("userId", passenger.getUser() == null ? null : passenger.getUser().getId());
+        data.put("fullName", passenger.getFullName());
         data.put("userName", passenger.getUser() == null ? null : passenger.getUser().getName());
         data.put("userEmail", passenger.getUser() == null ? null : passenger.getUser().getEmail());
         data.put("passportNumber", passenger.getPassportNumber());
@@ -219,4 +253,3 @@ public class PassengerServiceImpl implements PassengerService {
         return data;
     }
 }
-

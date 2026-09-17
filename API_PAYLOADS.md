@@ -1,4 +1,4 @@
-# Complete API Endpoint Payloads
+﻿# Complete API Endpoint Payloads
 
 **Base URL:** `http://localhost:8080`  
 **API Prefix:** `/api/v1`
@@ -1593,4 +1593,5 @@ All API responses follow this structure:
 ```
 
 ---
+
 

@@ -144,7 +144,113 @@ public class FlightServiceImpl implements FlightService {
 
     @Override
     public Map<String, Object> updateFlight(String flightId, FlightUpdateRequest request) {
-        return ApiResponse.badRequest("Flight update not available yet");
+        Flight flight = resolveFlight(flightId);
+        if (flight == null) {
+            return ApiResponse.badRequest("Flight not found");
+        }
+
+        // Validate departure and arrival times if provided
+        LocalDateTime departureTime = request.departureTime() != null ? request.departureTime() : flight.getDepartureTime();
+        LocalDateTime arrivalTime = request.arrivalTime() != null ? request.arrivalTime() : flight.getArrivalTime();
+        
+        if (!arrivalTime.isAfter(departureTime)) {
+            return ApiResponse.badRequest("Arrival time must be after departure time");
+        }
+
+        // Validate flight number if changing it
+        if (request.flightNumber() != null && !request.flightNumber().isBlank() && 
+            !request.flightNumber().equalsIgnoreCase(flight.getFlightNumber())) {
+            if (flightNumberExists(request.flightNumber())) {
+                return ApiResponse.badRequest("Flight number already exists");
+            }
+        }
+
+        // Resolve and validate related entities if provided
+        Airline airline = flight.getAirline();
+        if (request.airlineId() != null && !request.airlineId().isBlank()) {
+            airline = resolveAirline(request.airlineId());
+            if (airline == null) {
+                return ApiResponse.badRequest("Airline not found");
+            }
+        }
+
+        Aircraft aircraft = flight.getAircraft();
+        if (request.aircraftId() != null && !request.aircraftId().isBlank()) {
+            aircraft = resolveAircraft(request.aircraftId());
+            if (aircraft == null) {
+                return ApiResponse.badRequest("Aircraft not found");
+            }
+        }
+
+        Route route = flight.getRoute();
+        String fromAirportCode = request.fromAirportCode() != null ? request.fromAirportCode() : (flight.getFromAirport() != null ? flight.getFromAirport().getCode() : null);
+        String toAirportCode = request.toAirportCode() != null ? request.toAirportCode() : (flight.getToAirport() != null ? flight.getToAirport().getCode() : null);
+        
+        if (request.routeId() != null && !request.routeId().isBlank()) {
+            route = resolveRoute(request.routeId(), fromAirportCode, toAirportCode);
+            if (route == null) {
+                return ApiResponse.badRequest("Route not found");
+            }
+        }
+
+        Airport fromAirport = resolveAirport(fromAirportCode);
+        Airport toAirport = resolveAirport(toAirportCode);
+        
+        if (fromAirport == null || toAirport == null) {
+            return ApiResponse.badRequest("Both airports must exist");
+        }
+
+        // Validate seat capacity
+        int seatCapacity = request.seatCapacity() != null ? request.seatCapacity() : flight.getSeatCapacity();
+        if (seatCapacity <= 0) {
+            return ApiResponse.badRequest("Seat capacity must be greater than zero");
+        }
+        if (aircraft != null && aircraft.getSeatCapacity() != null && seatCapacity > aircraft.getSeatCapacity()) {
+            return ApiResponse.badRequest("Seat capacity cannot exceed aircraft seat capacity");
+        }
+
+        // Validate seats available
+        int seatsAvailable = request.seatsAvailable() != null ? request.seatsAvailable() : flight.getSeatsAvailable();
+        if (seatsAvailable < 0) {
+            return ApiResponse.badRequest("Seats available cannot be negative");
+        }
+        if (seatsAvailable > seatCapacity) {
+            return ApiResponse.badRequest("Seats available cannot exceed seat capacity");
+        }
+
+        // Update flight properties
+        if (request.flightNumber() != null && !request.flightNumber().isBlank()) {
+            flight.setFlightNumber(request.flightNumber().trim());
+        }
+        if (airline != null) {
+            flight.setAirline(airline);
+        }
+        if (aircraft != null) {
+            flight.setAircraft(aircraft);
+        }
+        if (route != null) {
+            flight.setRoute(route);
+        }
+        flight.setFromAirport(fromAirport);
+        flight.setToAirport(toAirport);
+        flight.setDepartureTime(departureTime);
+        flight.setArrivalTime(arrivalTime);
+        
+        if (request.price() != null && request.price().compareTo(BigDecimal.ZERO) > 0) {
+            flight.setPrice(request.price());
+        }
+        
+        flight.setSeatCapacity(seatCapacity);
+        flight.setSeatsAvailable(seatsAvailable);
+        
+        if (request.status() != null && !request.status().isBlank()) {
+            flight.setStatus(EntityLookupSupport.parseEnum(Flight.FlightStatusType.class, request.status(), flight.getStatus()));
+        }
+
+        entityManager.merge(flight);
+        entityManager.flush();
+
+        return ApiResponse.ok("Flight updated", Map.of("flight", flightData(flight)));
     }
 
     @Override

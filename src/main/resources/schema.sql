@@ -105,7 +105,8 @@ CREATE TABLE IF NOT EXISTS flight_statuses (
 
 CREATE TABLE IF NOT EXISTS passenger_profiles (
     id INTEGER PRIMARY KEY,
-    user_id INTEGER NOT NULL UNIQUE,
+    user_id INTEGER UNIQUE,
+    full_name VARCHAR(255) NOT NULL,
     passport_number VARCHAR(255) NOT NULL,
     nationality VARCHAR(255) NOT NULL,
     phone VARCHAR(255) NOT NULL,

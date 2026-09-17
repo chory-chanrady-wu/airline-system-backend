@@ -55,7 +55,7 @@ public class SeedDataLoader {
                 Flight flight2 = seedFlight("GA-202", garuda, aircraft, sinToKul, sin, kul,
                         tomorrowMidday, tomorrowMidday.plusMinutes(55),
                         new BigDecimal("99.00"), 180, 42, Flight.FlightStatusType.Boarding);
-                PassengerProfile passengerProfile = seedPassengerProfile(passenger, "P12345678", "Indonesian",
+                PassengerProfile passengerProfile = seedPassengerProfile(passenger, "Raka Pratama", "P12345678", "Indonesian",
                         "+62-812-3456-7890", LocalDate.of(1996, 5, 21), "Maya Pratama (+62-811-2222-3333)");
                 seedBooking("BK-20260914-001", passengerProfile, flight1, "12A", new BigDecimal("145.00"),
                         "USD", Booking.BookingStatus.Confirmed, null);
@@ -167,10 +167,11 @@ public class SeedDataLoader {
         entityManager.persist(flight);
         return flight;
     }
-    private PassengerProfile seedPassengerProfile(User user, String passportNumber, String nationality, String phone,
+    private PassengerProfile seedPassengerProfile(User user, String fullName, String passportNumber, String nationality, String phone,
                                                   LocalDate dateOfBirth, String emergencyContact) {
         PassengerProfile profile = PassengerProfile.builder()
                 .user(user)
+                .fullName(fullName)
                 .passportNumber(passportNumber)
                 .nationality(nationality)
                 .phone(phone)

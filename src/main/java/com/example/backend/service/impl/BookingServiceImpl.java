@@ -18,10 +18,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 @Transactional
@@ -45,39 +49,70 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public Map<String, Object> createBooking(BookingCreateRequest request) {
-        PassengerProfile passenger = resolvePassenger(request.passengerId());
-        Flight flight = resolveFlight(request.flightId());
+        PassengerProfile passenger = null;
+        if (request.passengerName() != null && !request.passengerName().isBlank()) {
+            passenger = resolvePassengerByName(request.passengerName());
+        }
+        if (passenger == null) {
+            passenger = resolvePassenger(request.passengerId());
+        }
+
+        Flight flight = null;
+        if (request.flightNumber() != null && !request.flightNumber().isBlank()) {
+            flight = resolveFlight(request.flightNumber());
+        }
+        if (flight == null) {
+            flight = resolveFlight(request.flightId());
+        }
+
         if (passenger == null) {
             return ApiResponse.badRequest("Passenger not found");
         }
         if (flight == null) {
             return ApiResponse.badRequest("Flight not found");
         }
+
         Booking.BookingStatus status = EntityLookupSupport.parseEnum(Booking.BookingStatus.class, request.status(), Booking.BookingStatus.Confirmed);
         if (status == Booking.BookingStatus.Confirmed && flight.getSeatsAvailable() != null && flight.getSeatsAvailable() <= 0) {
             status = Booking.BookingStatus.Waitlisted;
         }
+
+        String assignedSeatNumber = null;
+        if (status == Booking.BookingStatus.Confirmed) {
+            assignedSeatNumber = assignRandomSeatNumber(flight);
+        }
+
+        // Persist with a temporary unique reference to satisfy NOT NULL/UNIQUE constraints.
         Booking booking = Booking.builder()
+                .bookingReference("TMP-" + UUID.randomUUID())
                 .passenger(passenger)
                 .flight(flight)
-                .seatNumber(request.seatNumber())
+                .seatNumber(assignedSeatNumber)
                 .amount(request.amount() == null ? BigDecimal.ZERO : request.amount())
                 .currency(request.currency() == null || request.currency().isBlank() ? "USD" : request.currency())
                 .status(status)
                 .build();
+
         entityManager.persist(booking);
         entityManager.flush();
         booking.setBookingReference(String.format("BK-%08d", booking.getId()));
+
         if (status == Booking.BookingStatus.Confirmed) {
             occupySeat(flight);
         }
-        writeHistory(booking, passenger, status == Booking.BookingStatus.Waitlisted ? BookingHistory.ActionType.Waitlisted : BookingHistory.ActionType.Created, null, status.name());
+
+        writeHistory(booking, passenger,
+                status == Booking.BookingStatus.Waitlisted ? BookingHistory.ActionType.Waitlisted : BookingHistory.ActionType.Created,
+                null,
+                status.name());
+
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("booking", bookingData(booking));
         if (status == Booking.BookingStatus.Waitlisted) {
             WaitlistEntry waitlistEntry = createWaitlistEntry(flight, passenger, booking);
             data.put("waitlistEntry", waitlistData(waitlistEntry));
         }
+
         entityManager.flush();
         return ApiResponse.created("Booking created", data);
     }
@@ -249,12 +284,80 @@ public class BookingServiceImpl implements BookingService {
         return passengers.isEmpty() ? null : passengers.get(0);
     }
 
+    private PassengerProfile resolvePassengerByName(String passengerName) {
+        if (passengerName == null || passengerName.isBlank()) {
+            return null;
+        }
+        String normalizedName = passengerName.trim().toLowerCase(Locale.ROOT);
+
+        List<PassengerProfile> directMatches = entityManager.createQuery(
+                        "select p from PassengerProfile p where lower(p.fullName) = :name",
+                        PassengerProfile.class)
+                .setParameter("name", normalizedName)
+                .setMaxResults(1)
+                .getResultList();
+        if (!directMatches.isEmpty()) {
+            return directMatches.get(0);
+        }
+
+        List<PassengerProfile> userNameMatches = entityManager.createQuery(
+                        "select p from PassengerProfile p where p.user is not null and lower(p.user.name) = :name",
+                        PassengerProfile.class)
+                .setParameter("name", normalizedName)
+                .setMaxResults(1)
+                .getResultList();
+        return userNameMatches.isEmpty() ? null : userNameMatches.get(0);
+    }
+
+    private String assignRandomSeatNumber(Flight flight) {
+        if (flight == null || flight.getSeatCapacity() == null || flight.getSeatCapacity() <= 0) {
+            return null;
+        }
+
+        int seatCapacity = flight.getSeatCapacity();
+        Set<String> occupiedSeats = new HashSet<>(entityManager.createQuery(
+                        "select b.seatNumber from Booking b where b.flight = :flight and b.status = :status and b.seatNumber is not null",
+                        String.class)
+                .setParameter("flight", flight)
+                .setParameter("status", Booking.BookingStatus.Confirmed)
+                .getResultList());
+
+        if (occupiedSeats.size() >= seatCapacity) {
+            return null;
+        }
+
+        List<String> availableSeats = new ArrayList<>();
+        int rows = (seatCapacity + 5) / 6;
+        char[] columns = {'A', 'B', 'C', 'D', 'E', 'F'};
+        int seatIndex = 0;
+
+        for (int row = 1; row <= rows; row++) {
+            for (char column : columns) {
+                seatIndex++;
+                if (seatIndex > seatCapacity) {
+                    break;
+                }
+                String seat = row + String.valueOf(column);
+                if (!occupiedSeats.contains(seat)) {
+                    availableSeats.add(seat);
+                }
+            }
+        }
+
+        if (availableSeats.isEmpty()) {
+            return null;
+        }
+
+        int randomIndex = ThreadLocalRandom.current().nextInt(availableSeats.size());
+        return availableSeats.get(randomIndex);
+    }
+
     private Map<String, Object> bookingData(Booking booking) {
         Map<String, Object> data = new LinkedHashMap<>();
         data.put("id", booking.getId());
         data.put("bookingReference", booking.getBookingReference());
         data.put("passengerId", booking.getPassenger() == null ? null : booking.getPassenger().getId());
-        data.put("passengerName", booking.getPassenger() == null || booking.getPassenger().getUser() == null ? null : booking.getPassenger().getUser().getName());
+        data.put("passengerName", booking.getPassenger() == null ? null : booking.getPassenger().getFullName());
         data.put("flightId", booking.getFlight() == null ? null : booking.getFlight().getId());
         data.put("flightNumber", booking.getFlight() == null ? null : booking.getFlight().getFlightNumber());
         data.put("seatNumber", booking.getSeatNumber());
@@ -284,4 +387,3 @@ public class BookingServiceImpl implements BookingService {
         return data;
     }
 }
-

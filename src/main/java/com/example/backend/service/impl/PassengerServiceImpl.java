@@ -135,15 +135,18 @@ public class PassengerServiceImpl implements PassengerService {
         if (passenger == null) {
             return ApiResponse.badRequest("Passenger not found");
         }
-        entityManager.createQuery("delete from BookingHistory h where h.passenger = :passenger")
-                .setParameter("passenger", passenger)
+        Integer passengerId = passenger.getId();
+        entityManager.createQuery("delete from BookingHistory h where h.passenger.id = :passengerId")
+                .setParameter("passengerId", passengerId)
                 .executeUpdate();
-        entityManager.createQuery("delete from Booking b where b.passenger = :passenger")
-                .setParameter("passenger", passenger)
+        entityManager.createQuery("delete from Booking b where b.passenger.id = :passengerId")
+                .setParameter("passengerId", passengerId)
                 .executeUpdate();
-        entityManager.remove(passenger);
+        entityManager.createQuery("delete from PassengerProfile p where p.id = :passengerId")
+                .setParameter("passengerId", passengerId)
+                .executeUpdate();
         entityManager.flush();
-        return ApiResponse.ok("Passenger deleted", Map.of("id", passenger.getId()));
+        return ApiResponse.ok("Passenger deleted", Map.of("id", passengerId));
     }
 
     @Override

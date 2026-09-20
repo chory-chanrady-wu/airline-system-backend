@@ -1,0 +1,337 @@
+@startuml
+title Flight Booker Backend - UML Class Diagram
+
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+hide empty members
+
+package "Web Layer" {
+  class AuthController <<Controller>>
+  class UserController <<Controller>>
+  class RoleController <<Controller>>
+  class AirportController <<Controller>>
+  class RouteController <<Controller>>
+  class FlightController <<Controller>>
+  class BookingController <<Controller>>
+  class PassengerController <<Controller>>
+  class AircraftController <<Controller>>
+  class RadarController <<Controller>>
+  class HealthController <<Controller>>
+  class AnalyticsController <<Controller>>
+}
+
+package "Service Layer" {
+  interface AuthService
+  interface UserService
+  interface RoleService
+  interface AirportService
+  interface RouteService
+  interface FlightService
+  interface BookingService
+  interface PassengerService
+  interface AircraftService
+  interface RadarService
+  interface HealthService
+  interface AnalyticsService
+
+  class AuthServiceImpl <<Service>>
+  class UserServiceImpl <<Service>>
+  class RoleServiceImpl <<Service>>
+  class AirportServiceImpl <<Service>>
+  class RouteServiceImpl <<Service>>
+  class FlightServiceImpl <<Service>>
+  class BookingServiceImpl <<Service>>
+  class PassengerServiceImpl <<Service>>
+  class AircraftServiceImpl <<Service>>
+  class RadarServiceImpl <<Service>>
+  class HealthServiceImpl <<Service>>
+  class AnalyticsServiceImpl <<Service>>
+}
+
+package "Persistence Layer" {
+  interface UserRepository <<Repository>>
+  interface RoleRepository <<Repository>>
+  interface AirportRepository <<Repository>>
+  interface RouteRepository <<Repository>>
+  interface FlightRepository <<Repository>>
+  interface BookingRepository <<Repository>>
+}
+
+package "Domain Model" {
+  class User {
+    +id: Integer
+    +name: String
+    +email: String
+    +passwordHash: String
+    +status: UserStatus
+    +userType: UserType
+    +createdAt: LocalDateTime
+    +updatedAt: LocalDateTime
+  }
+
+  enum UserStatus {
+    Active
+    Inactive
+  }
+
+  enum UserType {
+    SYSTEM_USER
+    PASSENGER
+  }
+
+  class Role {
+    +id: Integer
+    +name: String
+    +description: String
+    +permissions: List<String>
+    +createdAt: LocalDateTime
+    +updatedAt: LocalDateTime
+  }
+
+  class PassengerProfile {
+    +id: Integer
+    +fullName: String
+    +passportNumber: String
+    +nationality: String
+    +phone: String
+    +dateOfBirth: LocalDate
+    +emergencyContact: String
+    +createdAt: LocalDateTime
+    +updatedAt: LocalDateTime
+  }
+
+  class Flight {
+    +id: Integer
+    +flightNumber: String
+    +departureTime: LocalDateTime
+    +arrivalTime: LocalDateTime
+    +price: BigDecimal
+    +seatCapacity: Integer
+    +seatsAvailable: Integer
+    +status: FlightStatusType
+    +createdAt: LocalDateTime
+    +updatedAt: LocalDateTime
+  }
+
+  enum FlightStatusType {
+    Scheduled
+    Boarding
+    Departed
+    Arrived
+    Delayed
+    Cancelled
+  }
+
+  class Booking {
+    +id: Integer
+    +bookingReference: String
+    +seatNumber: String
+    +amount: BigDecimal
+    +currency: String
+    +status: BookingStatus
+    +bookedAt: LocalDateTime
+    +cancelledAt: LocalDateTime
+    +createdAt: LocalDateTime
+    +updatedAt: LocalDateTime
+  }
+
+  enum BookingStatus {
+    Confirmed
+    Waitlisted
+    Cancelled
+  }
+
+  class WaitlistEntry {
+    +id: Integer
+    +position: Integer
+    +status: WaitlistStatus
+    +joinedAt: LocalDateTime
+    +offeredAt: LocalDateTime
+    +expiresAt: LocalDateTime
+  }
+
+  enum WaitlistStatus {
+    Waiting
+    Offered
+    Accepted
+    Expired
+    Cancelled
+  }
+
+  class Airport {
+    +code: String
+    +city: String
+    +country: String
+    +latitude: BigDecimal
+    +longitude: BigDecimal
+    +timezone: String
+    +createdAt: LocalDateTime
+    +updatedAt: LocalDateTime
+  }
+
+  class Route {
+    +id: Integer
+    +distanceKm: Integer
+    +durationMinutes: Integer
+    +active: Boolean
+    +createdAt: LocalDateTime
+    +updatedAt: LocalDateTime
+  }
+
+  class Airline {
+    +id: Integer
+    +code: String
+    +name: String
+    +logoUrl: String
+    +active: Boolean
+    +createdAt: LocalDateTime
+    +updatedAt: LocalDateTime
+  }
+
+  class Aircraft {
+    +id: Integer
+    +registrationNumber: String
+    +model: String
+    +seatCapacity: Integer
+    +active: Boolean
+    +createdAt: LocalDateTime
+    +updatedAt: LocalDateTime
+  }
+
+  class FlightStatus {
+    +id: Integer
+    +status: String
+    +delayMinutes: Integer
+    +gate: String
+    +terminal: String
+    +remarks: String
+    +recordedAt: LocalDateTime
+  }
+
+  class Itinerary {
+    +id: Integer
+    +originAirportCode: String
+    +destinationAirportCode: String
+    +path: List<String>
+    +layovers: List<String>
+    +stops: Integer
+    +totalPrice: BigDecimal
+    +durationMinutes: Integer
+    +algorithm: String
+    +createdAt: LocalDateTime
+  }
+
+  class Notification {
+    +id: Integer
+    +type: NotificationType
+    +title: String
+    +message: String
+    +read: Boolean
+    +createdAt: LocalDateTime
+  }
+
+  enum NotificationType {
+    Booking
+    Waitlist
+    FlightStatus
+    System
+  }
+
+  class Permission {
+    +id: Integer
+    +code: String
+    +name: String
+    +description: String
+  }
+}
+
+' Controller -> Service
+AuthController --> AuthService
+UserController --> UserService
+RoleController --> RoleService
+AirportController --> AirportService
+RouteController --> RouteService
+FlightController --> FlightService
+BookingController --> BookingService
+PassengerController --> PassengerService
+AircraftController --> AircraftService
+RadarController --> RadarService
+HealthController --> HealthService
+AnalyticsController --> AnalyticsService
+
+' Service implementation
+AuthServiceImpl ..|> AuthService
+UserServiceImpl ..|> UserService
+RoleServiceImpl ..|> RoleService
+AirportServiceImpl ..|> AirportService
+RouteServiceImpl ..|> RouteService
+FlightServiceImpl ..|> FlightService
+BookingServiceImpl ..|> BookingService
+PassengerServiceImpl ..|> PassengerService
+AircraftServiceImpl ..|> AircraftService
+RadarServiceImpl ..|> RadarService
+HealthServiceImpl ..|> HealthService
+AnalyticsServiceImpl ..|> AnalyticsService
+
+' Repository usage
+UserServiceImpl ..> UserRepository
+RoleServiceImpl ..> RoleRepository
+AirportServiceImpl ..> AirportRepository
+RouteServiceImpl ..> RouteRepository
+FlightServiceImpl ..> FlightRepository
+BookingServiceImpl ..> BookingRepository
+
+' Repository -> entity
+UserRepository ..> User : manages
+RoleRepository ..> Role : manages
+AirportRepository ..> Airport : manages
+RouteRepository ..> Route : manages
+FlightRepository ..> Flight : manages
+BookingRepository ..> Booking : manages
+
+' Enums
+User --> UserStatus
+User --> UserType
+Flight --> FlightStatusType
+Booking --> BookingStatus
+WaitlistEntry --> WaitlistStatus
+Notification --> NotificationType
+
+' Domain relationships
+Role "1" <-- "0..*" User : role
+User "0..1" <-- "0..1" PassengerProfile : linked account
+PassengerProfile "1" <-- "0..*" Booking : passenger
+Flight "1" <-- "0..*" Booking : flight
+Flight "1" <-- "0..*" WaitlistEntry : waitlist
+PassengerProfile "1" <-- "0..*" WaitlistEntry : passenger
+Booking "1" <-- "0..*" WaitlistEntry : booking
+Airport "1" <-- "0..*" Route : fromAirport
+Airport "1" <-- "0..*" Route : toAirport
+Airport "1" <-- "0..*" Flight : fromAirport
+Airport "1" <-- "0..*" Flight : toAirport
+Airline "1" <-- "0..*" Flight : airline
+Aircraft "1" <-- "0..*" Flight : aircraft
+Route "1" <-- "0..*" Flight : route
+Flight "1" <-- "0..*" FlightStatus : status history
+PassengerProfile "1" <-- "0..*" Itinerary : passenger
+Booking "0..1" <-- "0..*" Itinerary : booking
+User "1" <-- "0..*" Notification : notifications
+Role ..> Permission : permission codes
+
+note bottom of Permission
+  Permission exists as its own entity.
+  Role currently stores permission codes as List<String>
+  rather than a direct JPA association.
+end note
+
+note bottom of AnalyticsController
+  Supporting analytics/audit snapshot entities
+  such as AnalyticsSnapshot, RadarSnapshot,
+  BenchmarkResult, RouteLoadFactor, and AuditLog
+  are omitted here to keep the diagram readable.
+end note
+
+@enduml
+

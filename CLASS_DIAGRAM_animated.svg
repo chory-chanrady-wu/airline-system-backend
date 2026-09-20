@@ -1,0 +1,268 @@
+<svg width="1600" height="1400" viewBox="0 0 1600 1400" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1400" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F7FBFC"/>
+      <stop offset="1" stop-color="#EDF4F6"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#0F3E46" flood-opacity="0.12"/>
+    </filter>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#55717A"/>
+    </marker>
+    <style>
+      .title { font: 700 28px 'Segoe UI', Arial, sans-serif; fill: #163E4A; }
+      .subtitle { font: 500 14px 'Segoe UI', Arial, sans-serif; fill: #52707A; }
+      .card-title { font: 700 17px 'Segoe UI', Arial, sans-serif; fill: #FFFFFF; }
+      .card-text { font: 400 12px 'Segoe UI', Arial, sans-serif; fill: #2B5160; }
+      .label { font: 500 12px 'Segoe UI', Arial, sans-serif; fill: #55717A; }
+      .foot { font: 500 12px 'Segoe UI', Arial, sans-serif; fill: #5E7881; }
+      .card-body { fill: #FFFFFF; stroke: #197278; stroke-width: 2; }
+      .card-head { fill: #197278; }
+      .soft-card-body { fill: #F1FAFA; stroke: #197278; stroke-width: 2; }
+      .link { stroke: #5B737C; stroke-width: 2.2; fill: none; marker-end: url(#arrow); stroke-linecap: round; }
+      .fade-in { opacity: 0; }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1600" height="1400" fill="url(#bg)"/>
+
+  <text x="800" y="42" text-anchor="middle" class="title">Flight Booker Backend — UML Class Diagram</text>
+  <text x="800" y="68" text-anchor="middle" class="subtitle">Animated SVG view with full properties for the main backend classes</text>
+
+  <!-- Animated relationship lines -->
+  <path class="link" d="M 300 205 L 350 205" stroke-dasharray="50" stroke-dashoffset="50">
+    <animate attributeName="stroke-dashoffset" from="50" to="0" begin="0.8s" dur="0.45s" fill="freeze" />
+  </path>
+  <text x="314" y="194" class="label">linked account</text>
+
+  <path class="link" d="M 170 400 L 170 540" stroke-dasharray="140" stroke-dashoffset="140">
+    <animate attributeName="stroke-dashoffset" from="140" to="0" begin="1s" dur="0.5s" fill="freeze" />
+  </path>
+  <text x="182" y="478" class="label">role</text>
+
+  <path class="link" d="M 660 235 L 710 235" stroke-dasharray="50" stroke-dashoffset="50">
+    <animate attributeName="stroke-dashoffset" from="50" to="0" begin="1.2s" dur="0.45s" fill="freeze" />
+  </path>
+  <text x="675" y="224" class="label">books</text>
+
+  <path class="link" d="M 1050 215 L 1100 215" stroke-dasharray="50" stroke-dashoffset="50">
+    <animate attributeName="stroke-dashoffset" from="50" to="0" begin="1.4s" dur="0.45s" fill="freeze" />
+  </path>
+  <text x="1066" y="204" class="label">status</text>
+
+  <path class="link" d="M 660 660 L 710 660" stroke-dasharray="50" stroke-dashoffset="50">
+    <animate attributeName="stroke-dashoffset" from="50" to="0" begin="1.6s" dur="0.45s" fill="freeze" />
+  </path>
+  <text x="671" y="649" class="label">connects</text>
+
+  <path class="link" d="M 505 430 L 505 520" stroke-dasharray="90" stroke-dashoffset="90">
+    <animate attributeName="stroke-dashoffset" from="90" to="0" begin="1.8s" dur="0.45s" fill="freeze" />
+  </path>
+  <text x="517" y="565" class="label">uses</text>
+
+  <path class="link" d="M 720 960 C 835 900, 880 835, 880 800" stroke-dasharray="260" stroke-dashoffset="260">
+    <animate attributeName="stroke-dashoffset" from="260" to="0" begin="2s" dur="0.65s" fill="freeze" />
+  </path>
+  <text x="788" y="900" class="label">follows route</text>
+
+  <path class="link" d="M 505 870 L 505 800" stroke-dasharray="70" stroke-dashoffset="70">
+    <animate attributeName="stroke-dashoffset" from="70" to="0" begin="2.2s" dur="0.4s" fill="freeze" />
+  </path>
+  <text x="518" y="835" class="label">from / to</text>
+
+  <path class="link" d="M 890 480 C 955 545, 1030 630, 1100 650" stroke-dasharray="250" stroke-dashoffset="250">
+    <animate attributeName="stroke-dashoffset" from="250" to="0" begin="2.4s" dur="0.65s" fill="freeze" />
+  </path>
+  <text x="960" y="540" class="label">waitlist entry</text>
+
+  <path class="link" d="M 980 480 C 1095 620, 1200 780, 1245 900" stroke-dasharray="500" stroke-dashoffset="500">
+    <animate attributeName="stroke-dashoffset" from="500" to="0" begin="2.6s" dur="0.85s" fill="freeze" />
+  </path>
+  <text x="1095" y="600" class="label">notification</text>
+
+  <!-- User -->
+  <g class="fade-in" filter="url(#shadow)">
+    <animate attributeName="opacity" from="0" to="1" begin="0.1s" dur="0.45s" fill="freeze"/>
+    <rect x="40" y="110" width="260" height="290" rx="10" class="card-body"/>
+    <rect x="40" y="110" width="260" height="38" rx="10" class="card-head"/>
+    <rect x="40" y="138" width="260" height="10" class="card-head"/>
+    <text x="170" y="136" text-anchor="middle" class="card-title">User</text>
+    <text x="58" y="174" class="card-text">+ id: Integer</text>
+    <text x="58" y="198" class="card-text">+ name: String</text>
+    <text x="58" y="222" class="card-text">+ email: String</text>
+    <text x="58" y="246" class="card-text">+ passwordHash: String</text>
+    <text x="58" y="270" class="card-text">+ role: Role</text>
+    <text x="58" y="294" class="card-text">+ status: UserStatus</text>
+    <text x="58" y="318" class="card-text">+ userType: UserType</text>
+    <text x="58" y="342" class="card-text">+ createdAt: LocalDateTime</text>
+    <text x="58" y="366" class="card-text">+ updatedAt: LocalDateTime</text>
+  </g>
+
+  <!-- PassengerProfile -->
+  <g class="fade-in" filter="url(#shadow)">
+    <animate attributeName="opacity" from="0" to="1" begin="0.25s" dur="0.45s" fill="freeze"/>
+    <rect x="350" y="110" width="310" height="320" rx="10" class="card-body"/>
+    <rect x="350" y="110" width="310" height="38" rx="10" class="card-head"/>
+    <rect x="350" y="138" width="310" height="10" class="card-head"/>
+    <text x="505" y="136" text-anchor="middle" class="card-title">PassengerProfile</text>
+    <text x="370" y="174" class="card-text">+ id: Integer</text>
+    <text x="370" y="198" class="card-text">+ user: User</text>
+    <text x="370" y="222" class="card-text">+ fullName: String</text>
+    <text x="370" y="246" class="card-text">+ passportNumber: String</text>
+    <text x="370" y="270" class="card-text">+ nationality: String</text>
+    <text x="370" y="294" class="card-text">+ phone: String</text>
+    <text x="370" y="318" class="card-text">+ dateOfBirth: LocalDate</text>
+    <text x="370" y="342" class="card-text">+ emergencyContact: String</text>
+    <text x="370" y="366" class="card-text">+ createdAt: LocalDateTime</text>
+    <text x="370" y="390" class="card-text">+ updatedAt: LocalDateTime</text>
+  </g>
+
+  <!-- Booking -->
+  <g class="fade-in" filter="url(#shadow)">
+    <animate attributeName="opacity" from="0" to="1" begin="0.4s" dur="0.45s" fill="freeze"/>
+    <rect x="710" y="110" width="340" height="370" rx="10" class="card-body"/>
+    <rect x="710" y="110" width="340" height="38" rx="10" class="card-head"/>
+    <rect x="710" y="138" width="340" height="10" class="card-head"/>
+    <text x="880" y="136" text-anchor="middle" class="card-title">Booking</text>
+    <text x="730" y="174" class="card-text">+ id: Integer</text>
+    <text x="730" y="198" class="card-text">+ bookingReference: String</text>
+    <text x="730" y="222" class="card-text">+ passenger: PassengerProfile</text>
+    <text x="730" y="246" class="card-text">+ flight: Flight</text>
+    <text x="730" y="270" class="card-text">+ seatNumber: String</text>
+    <text x="730" y="294" class="card-text">+ amount: BigDecimal</text>
+    <text x="730" y="318" class="card-text">+ currency: String</text>
+    <text x="730" y="342" class="card-text">+ status: BookingStatus</text>
+    <text x="730" y="366" class="card-text">+ bookedAt: LocalDateTime</text>
+    <text x="730" y="390" class="card-text">+ cancelledAt: LocalDateTime</text>
+    <text x="730" y="414" class="card-text">+ createdAt: LocalDateTime</text>
+    <text x="730" y="438" class="card-text">+ updatedAt: LocalDateTime</text>
+  </g>
+
+  <!-- FlightStatus -->
+  <g class="fade-in" filter="url(#shadow)">
+    <animate attributeName="opacity" from="0" to="1" begin="0.55s" dur="0.45s" fill="freeze"/>
+    <rect x="1100" y="110" width="310" height="250" rx="10" class="soft-card-body"/>
+    <rect x="1100" y="110" width="310" height="38" rx="10" class="card-head"/>
+    <rect x="1100" y="138" width="310" height="10" class="card-head"/>
+    <text x="1255" y="136" text-anchor="middle" class="card-title">FlightStatus</text>
+    <text x="1120" y="174" class="card-text">+ id: Integer</text>
+    <text x="1120" y="198" class="card-text">+ flight: Flight</text>
+    <text x="1120" y="222" class="card-text">+ status: String</text>
+    <text x="1120" y="246" class="card-text">+ delayMinutes: Integer</text>
+    <text x="1120" y="270" class="card-text">+ gate: String</text>
+    <text x="1120" y="294" class="card-text">+ terminal: String</text>
+    <text x="1120" y="318" class="card-text">+ remarks: String</text>
+    <text x="1120" y="342" class="card-text">+ recordedAt: LocalDateTime</text>
+  </g>
+
+  <!-- Role -->
+  <g class="fade-in" filter="url(#shadow)">
+    <animate attributeName="opacity" from="0" to="1" begin="0.7s" dur="0.45s" fill="freeze"/>
+    <rect x="40" y="540" width="260" height="220" rx="10" class="card-body"/>
+    <rect x="40" y="540" width="260" height="38" rx="10" class="card-head"/>
+    <rect x="40" y="568" width="260" height="10" class="card-head"/>
+    <text x="170" y="566" text-anchor="middle" class="card-title">Role</text>
+    <text x="58" y="604" class="card-text">+ id: Integer</text>
+    <text x="58" y="628" class="card-text">+ name: String</text>
+    <text x="58" y="652" class="card-text">+ description: String</text>
+    <text x="58" y="676" class="card-text">+ permissions: List&lt;String&gt;</text>
+    <text x="58" y="700" class="card-text">+ createdAt: LocalDateTime</text>
+    <text x="58" y="724" class="card-text">+ updatedAt: LocalDateTime</text>
+  </g>
+
+  <!-- Airport -->
+  <g class="fade-in" filter="url(#shadow)">
+    <animate attributeName="opacity" from="0" to="1" begin="0.85s" dur="0.45s" fill="freeze"/>
+    <rect x="350" y="520" width="310" height="280" rx="10" class="card-body"/>
+    <rect x="350" y="520" width="310" height="38" rx="10" class="card-head"/>
+    <rect x="350" y="548" width="310" height="10" class="card-head"/>
+    <text x="505" y="546" text-anchor="middle" class="card-title">Airport</text>
+    <text x="370" y="584" class="card-text">+ code: String</text>
+    <text x="370" y="608" class="card-text">+ city: String</text>
+    <text x="370" y="632" class="card-text">+ country: String</text>
+    <text x="370" y="656" class="card-text">+ latitude: BigDecimal</text>
+    <text x="370" y="680" class="card-text">+ longitude: BigDecimal</text>
+    <text x="370" y="704" class="card-text">+ timezone: String</text>
+    <text x="370" y="728" class="card-text">+ createdAt: LocalDateTime</text>
+    <text x="370" y="752" class="card-text">+ updatedAt: LocalDateTime</text>
+  </g>
+
+  <!-- Route -->
+  <g class="fade-in" filter="url(#shadow)">
+    <animate attributeName="opacity" from="0" to="1" begin="1s" dur="0.45s" fill="freeze"/>
+    <rect x="710" y="520" width="340" height="280" rx="10" class="card-body"/>
+    <rect x="710" y="520" width="340" height="38" rx="10" class="card-head"/>
+    <rect x="710" y="548" width="340" height="10" class="card-head"/>
+    <text x="880" y="546" text-anchor="middle" class="card-title">Route</text>
+    <text x="730" y="584" class="card-text">+ id: Integer</text>
+    <text x="730" y="608" class="card-text">+ fromAirport: Airport</text>
+    <text x="730" y="632" class="card-text">+ toAirport: Airport</text>
+    <text x="730" y="656" class="card-text">+ distanceKm: Integer</text>
+    <text x="730" y="680" class="card-text">+ durationMinutes: Integer</text>
+    <text x="730" y="704" class="card-text">+ active: Boolean</text>
+    <text x="730" y="728" class="card-text">+ createdAt: LocalDateTime</text>
+    <text x="730" y="752" class="card-text">+ updatedAt: LocalDateTime</text>
+  </g>
+
+  <!-- Flight -->
+  <g class="fade-in" filter="url(#shadow)">
+    <animate attributeName="opacity" from="0" to="1" begin="1.15s" dur="0.45s" fill="freeze"/>
+    <rect x="350" y="870" width="410" height="430" rx="10" class="card-body"/>
+    <rect x="350" y="870" width="410" height="38" rx="10" class="card-head"/>
+    <rect x="350" y="898" width="410" height="10" class="card-head"/>
+    <text x="555" y="896" text-anchor="middle" class="card-title">Flight</text>
+    <text x="370" y="934" class="card-text">+ id: Integer</text>
+    <text x="370" y="958" class="card-text">+ flightNumber: String</text>
+    <text x="370" y="982" class="card-text">+ airline: Airline</text>
+    <text x="370" y="1006" class="card-text">+ aircraft: Aircraft</text>
+    <text x="370" y="1030" class="card-text">+ route: Route</text>
+    <text x="370" y="1054" class="card-text">+ fromAirport: Airport</text>
+    <text x="370" y="1078" class="card-text">+ toAirport: Airport</text>
+    <text x="370" y="1102" class="card-text">+ departureTime: LocalDateTime</text>
+    <text x="370" y="1126" class="card-text">+ arrivalTime: LocalDateTime</text>
+    <text x="370" y="1150" class="card-text">+ price: BigDecimal</text>
+    <text x="370" y="1174" class="card-text">+ seatCapacity: Integer</text>
+    <text x="370" y="1198" class="card-text">+ seatsAvailable: Integer</text>
+    <text x="370" y="1222" class="card-text">+ status: FlightStatusType</text>
+    <text x="370" y="1246" class="card-text">+ createdAt: LocalDateTime</text>
+    <text x="370" y="1270" class="card-text">+ updatedAt: LocalDateTime</text>
+  </g>
+
+  <!-- WaitlistEntry -->
+  <g class="fade-in" filter="url(#shadow)">
+    <animate attributeName="opacity" from="0" to="1" begin="1.3s" dur="0.45s" fill="freeze"/>
+    <rect x="1100" y="500" width="310" height="300" rx="10" class="soft-card-body"/>
+    <rect x="1100" y="500" width="310" height="38" rx="10" class="card-head"/>
+    <rect x="1100" y="528" width="310" height="10" class="card-head"/>
+    <text x="1255" y="526" text-anchor="middle" class="card-title">WaitlistEntry</text>
+    <text x="1120" y="564" class="card-text">+ id: Integer</text>
+    <text x="1120" y="588" class="card-text">+ flight: Flight</text>
+    <text x="1120" y="612" class="card-text">+ passenger: PassengerProfile</text>
+    <text x="1120" y="636" class="card-text">+ booking: Booking</text>
+    <text x="1120" y="660" class="card-text">+ position: Integer</text>
+    <text x="1120" y="684" class="card-text">+ status: WaitlistStatus</text>
+    <text x="1120" y="708" class="card-text">+ joinedAt: LocalDateTime</text>
+    <text x="1120" y="732" class="card-text">+ offeredAt: LocalDateTime</text>
+    <text x="1120" y="756" class="card-text">+ expiresAt: LocalDateTime</text>
+  </g>
+
+  <!-- Notification -->
+  <g class="fade-in" filter="url(#shadow)">
+    <animate attributeName="opacity" from="0" to="1" begin="1.45s" dur="0.45s" fill="freeze"/>
+    <rect x="1100" y="900" width="310" height="220" rx="10" class="soft-card-body"/>
+    <rect x="1100" y="900" width="310" height="38" rx="10" class="card-head"/>
+    <rect x="1100" y="928" width="310" height="10" class="card-head"/>
+    <text x="1255" y="926" text-anchor="middle" class="card-title">Notification</text>
+    <text x="1120" y="964" class="card-text">+ id: Integer</text>
+    <text x="1120" y="988" class="card-text">+ user: User</text>
+    <text x="1120" y="1012" class="card-text">+ type: NotificationType</text>
+    <text x="1120" y="1036" class="card-text">+ title: String</text>
+    <text x="1120" y="1060" class="card-text">+ message: String</text>
+    <text x="1120" y="1084" class="card-text">+ read: Boolean</text>
+    <text x="1120" y="1108" class="card-text">+ createdAt: LocalDateTime</text>
+  </g>
+
+  <text x="800" y="1360" text-anchor="middle" class="foot">Solid animated connectors show core entity relationships. Teal cards now display the full properties for each shown class.</text>
+</svg>
+
